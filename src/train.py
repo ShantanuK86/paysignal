@@ -30,7 +30,9 @@ for col in categorical_cols:
     df[col] = le.fit_transform(df[col])
     encoders[col] = le
 
-# Save encoders
+# Save
+os.makedirs("model", exist_ok=True)
+
 with open("model/encoders.pkl", "wb") as f:
     pickle.dump(encoders, f)
 
