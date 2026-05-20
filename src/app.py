@@ -1,9 +1,14 @@
+import os
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 import pickle
 
 app = FastAPI()
+
+
+os.makedirs("model", exist_ok=True)
 
 with open("model/model.pkl","rb") as f:
     model= pickle.load(f)
