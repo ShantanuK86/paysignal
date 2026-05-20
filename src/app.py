@@ -11,10 +11,10 @@ app = FastAPI()
 os.makedirs("model", exist_ok=True)
 
 with open("model/model.pkl","rb") as f:
-    model= pickle.load(f)
+    pickle.dump(model, f)
 
 with open("model/encoders.pkl","rb") as f:
-    encoders= pickle.load(f)
+    pickle.dump(encoders, f)
 
 class SalaryInput(BaseModel):
     work_year: int
