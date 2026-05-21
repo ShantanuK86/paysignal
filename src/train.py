@@ -21,23 +21,12 @@ df = df[features + [target]]
 categorical_cols = ['experience_level', 'job_title', 
                     'company_location', 'company_size']
 
-import pickle
-
 encoders = {}
 
 for col in categorical_cols:
     le = LabelEncoder()
     df[col] = le.fit_transform(df[col])
     encoders[col] = le
-
-# Save
-os.makedirs("model", exist_ok=True)
-
-with open("model/encoders.pkl", "wb") as f:
-    pickle.dump(encoders, f)
-
-print("encoders saved")
-
 
 # Split
 X = df[features]
@@ -47,9 +36,9 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-
-mlflow.start_run()
 # Train
+mlflow.start_run()
+
 model = RandomForestRegressor(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
 
@@ -61,18 +50,20 @@ r2  = r2_score(y_test, predictions)
 print(f"MAE: ${mae:,.0f}")
 print(f"R2:  {r2:.2f}")
 
-
 mlflow.log_param("n_estimators", 100)
 mlflow.log_metric("mae", mae)
 mlflow.log_metric("r2", r2)
+
 mlflow.end_run()
 
+# Save everything
+os.makedirs("model", exist_ok=True)
 
+with open("model/model.pkl", "wb") as f:
+    pickle.dump(model, f)
 
-# Save
-# os.makedirs("model", exist_ok=True)
+with open("model/encoders.pkl", "wb") as f:
+    pickle.dump(encoders, f)
 
-# with open("model/model.pkl", "wb") as f:
-#     pickle.dump(model, f)
-
-# print("model saved")
+print("model saved")
+print("encoders saved")
