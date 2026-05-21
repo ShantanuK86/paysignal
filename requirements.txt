@@ -4,3 +4,4 @@ fastapi
 uvicorn
 mlflow
 pydantic
+streamlit
