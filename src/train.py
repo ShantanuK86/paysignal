@@ -6,19 +6,20 @@ from sklearn.metrics import mean_absolute_error, r2_score
 import pickle
 import os
 import mlflow
+import mlflow.sklearn
 
 # Load
 df = pd.read_csv("data/ds_salaries.csv")
 
 # Select columns
-features = ['work_year', 'experience_level', 'job_title', 
+features = ['work_year', 'experience_level', 'job_title',
             'remote_ratio', 'company_location', 'company_size']
 target = 'salary_in_usd'
 
 df = df[features + [target]]
 
 # Encode
-categorical_cols = ['experience_level', 'job_title', 
+categorical_cols = ['experience_level', 'job_title',
                     'company_location', 'company_size']
 
 encoders = {}
@@ -36,27 +37,31 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# Train
-mlflow.start_run()
+# Train + Track
+with mlflow.start_run() as run:
 
-model = RandomForestRegressor(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
 
-# Evaluate
-predictions = model.predict(X_test)
-mae = mean_absolute_error(y_test, predictions)
-r2  = r2_score(y_test, predictions)
+    predictions = model.predict(X_test)
+    mae = mean_absolute_error(y_test, predictions)
+    r2  = r2_score(y_test, predictions)
 
-print(f"MAE: ${mae:,.0f}")
-print(f"R2:  {r2:.2f}")
+    print(f"MAE: ${mae:,.0f}")
+    print(f"R2:  {r2:.2f}")
 
-mlflow.log_param("n_estimators", 100)
-mlflow.log_metric("mae", mae)
-mlflow.log_metric("r2", r2)
+    mlflow.log_param("n_estimators", 100)
+    mlflow.log_metric("mae", mae)
+    mlflow.log_metric("r2", r2)
 
-mlflow.end_run()
+    # Register model in MLflow registry
+    mlflow.sklearn.log_model(
+        model,
+        artifact_path="model",
+        registered_model_name="paysignal-salary-predictor"
+    )
 
-# Save everything
+# Save locally too (needed for Docker + API)
 os.makedirs("model", exist_ok=True)
 
 with open("model/model.pkl", "wb") as f:
