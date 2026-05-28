@@ -22,5 +22,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Retrain model
-        run: python src/train.py
+      - name: Run Drift Monitor
+        run: python src/monitor.py
+    
+      - name: Run tests
+        run: pytest tests/ -v
