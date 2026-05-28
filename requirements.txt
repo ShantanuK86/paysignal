@@ -5,3 +5,4 @@ uvicorn
 mlflow
 pydantic
 streamlit
+pytest
