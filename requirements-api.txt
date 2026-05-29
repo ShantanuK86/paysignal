@@ -1,5 +1,8 @@
+pandas
+scikit-learn
 fastapi
 uvicorn
-scikit-learn
-pandas
+mlflow
 pydantic
+streamlit
+pytest
