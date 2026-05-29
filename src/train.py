@@ -8,6 +8,7 @@ import os
 import mlflow
 import mlflow.sklearn
 
+mlflow.set_tracking_uri("file:./mlruns")
 # Load
 df = pd.read_csv("data/ds_salaries.csv")
 

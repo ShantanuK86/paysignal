@@ -1,5 +1,6 @@
 venv/
+mlruns/
 __pycache__/
 *.pyc
-mlruns/
 model/
+.git/
